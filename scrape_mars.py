@@ -8,17 +8,19 @@ from selenium import webdriver
 
 #initialyzing the browser
 def init_browser():
-    #load the crome driver
+    #load the chrome driver
     executable_path ={'executable_path': 'chromedriver.exe'}
     return Browser('chrome', **executable_path, headless=False)
 
 #scraping   
 def scrape():
+
+    #Nasa Mars News Site
+
     browser = init_browser()    
     #Scraping data from the existing NASA Mars News website 
-    url =  "https://mars.nasa.gov/news/?page=0&per_page=40&order=publish_date+desc%2Ccreated_at+desc&search=&category=19%2C165%2C184%2C204&blank_scope=Latest"
-    response = requests.get(url)
-    soup = bs(response.text,"html.parser")
+    url = "https://mars.nasa.gov/news/?page=0&per_page=40&order=publish_date+desc%2Ccreated_at+desc&search=&category=19%2C165%2C184%2C204&blank_scope=Latest"
+    browser.visit(url)
 
     #find latest News Title and Paragraph by beautiful soup
     html = browser.html
@@ -45,8 +47,7 @@ def scrape():
     article_1_header = article_header_ls[0]
     article_1_body = article_body_ls[0]
 
-    print(article_1_header)
-    print(article_1_body)
+    #Image Scrape
 
     #visit the URL for the JPL Featured Space Image by splinter
     url_2 = "https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars"
@@ -65,10 +66,7 @@ def scrape():
         
         featured_image_url = base_url + relative_img_path
 
-    print(featured_image_url)
-
-    #main existing url
-    main_url = "https://www.jpl.nasa.gov"
+    #Mars Facts
 
     url_3 = 'https://space-facts.com/mars/'
     tables = pd.read_html(url_3)
@@ -78,43 +76,42 @@ def scrape():
     df
 
     html_table = df.to_html()
-    html_table
+
+    #Mars Hemispheres
 
     #visit the Mars Hemispheres web url
-    Mars_Hem="https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars"
-    browser.visit(Mars_Hem)
+    url_4 = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    browser.visit(url_4)
     #HTML object and parser
-    html_Hem = browser.html
-    soup = bs(html_Hem, "html.parser")
+    html_4 = browser.html
+    soup_4 = BeautifulSoup(html_4, 'html.parser')
     #find the all item 
-    Mars_Hem_item=soup.find_all("div", class_="item")
-    #declare a list of Hamisphere url list
-    Hem_image_url=[]
-    # bring the main url 
-    Hem_main_url = "https://astrogeology.usgs.gov"
-    #use for loop to containg the image link
-    for item in Mars_Hem_item:
-        #to get the title
-        title=item.find("h3").text
-        #to get the partial image url
-        partial_image_url=item.find("a", class_="itemLink product-item")["href"]
-        #visit the both url
-        browser.visit(Hem_main_url + partial_image_url)
-        #HTML object and parser
-        partial_image_html=browser.html
-        soup=bs(partial_image_html, "html.parser")
-        # to get the  full image url 
-        full_image_url = Hem_main_url + soup.find("img", class_="wide-image")["src"]
-        #put the data in the list
-        Hem_image_url.append({"title":title, "img_url" : full_image_url })
+    hemisphere_img_urls=[]
+    base_url = 'https://astrogeology.usgs.gov'
 
-    Mars_Hemispheres_data= {
-        "Mars_News_Title": news_title,
-        "Mars_News_Paragraph": news_p,
+    items = soup_4.find_all('div', class_='item')
+
+    for item in items:
+        title = item.find("h3").text
+        h_img_url = item.find("a", class_="itemLink product-item")["href"]
+        
+        browser.visit(base_url + h_img_url)
+        
+        image_html = browser.html
+        soup_5 = BeautifulSoup(image_html, "html.parser")
+        
+        full_img_url = base_url + soup_5.find("img", class_="wide-image")["src"]
+        
+        hemisphere_img_urls.append({"title":title, "img_url":full_img_url})
+
+    Mars_data = {
+        "Mars_News_Title": article_1_header,
+        "Mars_News_Paragraph": article_1_body,
         "Mars_Featured_Image": featured_image_url,
-        "Mars_Facts": Mars_Facts_htmldata,
-        "Mars_Hemisphere_Images": Hem_image_url
+        "Mars_Facts": html_table,
+        "Mars_Hemisphere_Images": hemisphere_img_urls
     }
+
     browser.quit()
     
-    return Mars_Hemispheres_data
+    return Mars_data
