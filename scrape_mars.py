@@ -29,6 +29,7 @@ def scrape():
     content_title = soup.find_all('div', class_='content_title')
     teaser_body = soup.find_all('div', class_='article_teaser_body')
 
+    #list items to store info
     article_header_ls = []
     article_body_ls = []
 
