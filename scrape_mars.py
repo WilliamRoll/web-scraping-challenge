@@ -37,6 +37,7 @@ def scrape():
         
         art_title = title.find_all('a')
         
+        #loop through article titles
         for art in art_title:
             first_title = art.text.strip()
             article_header_ls.append(first_title)
@@ -76,9 +77,11 @@ def scrape():
     tables = pd.read_html(url_3)
     tables
 
+    #convert the table to a dataframe
     df = tables[0]
     df
 
+    #convert to an HTML
     html_table = df.to_html()
 
     #Mars Hemispheres
@@ -90,8 +93,10 @@ def scrape():
     html_4 = browser.html
     soup_4 = BeautifulSoup(html_4, 'html.parser')
     
-    #find the all item 
+    #create list for hemisphere urls
     hemisphere_img_urls=[]
+
+    #base url to be used to navigate to enhanced image urls
     base_url = 'https://astrogeology.usgs.gov'
 
     items = soup_4.find_all('div', class_='item')
@@ -101,6 +106,7 @@ def scrape():
         title = item.find("h3").text
         h_img_url = item.find("a", class_="itemLink product-item")["href"]
         
+        #visit the img urls
         browser.visit(base_url + h_img_url)
         
         image_html = browser.html
