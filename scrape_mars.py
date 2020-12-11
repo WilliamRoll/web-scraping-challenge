@@ -4,7 +4,6 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from splinter import Browser
-from selenium import webdriver
 
 #initialyzing the browser
 def init_browser():
@@ -33,6 +32,7 @@ def scrape():
     article_header_ls = []
     article_body_ls = []
 
+    #loop through titles
     for title in content_title:
         
         art_title = title.find_all('a')
@@ -59,6 +59,7 @@ def scrape():
 
     images = soup_2.find_all('a', class_='button fancybox')
 
+    #loop through
     for image in images:
         
         relative_img_path = image["data-fancybox-href"]
@@ -67,7 +68,7 @@ def scrape():
         
         featured_image_url = base_url + relative_img_path
 
-    #Mars Facts
+    #Mars Facts Table
 
     url_3 = 'https://space-facts.com/mars/'
     tables = pd.read_html(url_3)
@@ -86,6 +87,7 @@ def scrape():
     #HTML object and parser
     html_4 = browser.html
     soup_4 = BeautifulSoup(html_4, 'html.parser')
+    
     #find the all item 
     hemisphere_img_urls=[]
     base_url = 'https://astrogeology.usgs.gov'
@@ -105,6 +107,7 @@ def scrape():
         
         hemisphere_img_urls.append({"title":title, "img_url":full_img_url})
 
+    #mars data dictionary
     Mars_data = {
         "Mars_News_Title": article_1_header,
         "Mars_News_Paragraph": article_1_body,
