@@ -40,11 +40,13 @@ def scrape():
         for art in art_title:
             first_title = art.text.strip()
             article_header_ls.append(first_title)
-            
+
+    #loop through body        
     for body in teaser_body:
         body = body.text.strip()
         article_body_ls.append(body)
-        
+
+    #set header and body 1 variables    
     article_1_header = article_header_ls[0]
     article_1_body = article_body_ls[0]
 
@@ -59,7 +61,7 @@ def scrape():
 
     images = soup_2.find_all('a', class_='button fancybox')
 
-    #loop through
+    #loop through images
     for image in images:
         
         relative_img_path = image["data-fancybox-href"]
@@ -93,7 +95,8 @@ def scrape():
     base_url = 'https://astrogeology.usgs.gov'
 
     items = soup_4.find_all('div', class_='item')
-
+    
+    #loop through items
     for item in items:
         title = item.find("h3").text
         h_img_url = item.find("a", class_="itemLink product-item")["href"]
